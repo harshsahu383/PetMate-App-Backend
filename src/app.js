@@ -6,6 +6,7 @@ const cookieParser = require("cookie-parser");
 const morgan = require("morgan");
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
+const petRoutes = require("./routes/pet.routes");
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/pets", petRoutes);
 
 // Test Route
 app.get("/", (req, res) => {

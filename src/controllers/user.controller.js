@@ -59,8 +59,8 @@ const completeProfile = async (req, res) => {
         return res.status(200).json({
             success: true,
             message: "Profile completed successfully",
+            data: null,
         });
-
     } catch (error) {
 
         console.error(error);
@@ -107,7 +107,10 @@ const getProfile = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            user: rows[0],
+            message: "Profile fetched successfully",
+            data: {
+                user: rows[0],
+            },
         });
 
     } catch (error) {

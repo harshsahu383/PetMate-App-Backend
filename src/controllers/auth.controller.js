@@ -119,15 +119,20 @@ const verifyEmailOTP = async (req, res) => {
             ]
         );
         const token = generateToken(result.insertId);
+
         otpStore.delete(email);
+
         return res.status(201).json({
             success: true,
             message: "Account Created Successfully",
-            token,
-            user: {
-                id: result.insertId,
-                name,
-                email,
+            data: {
+                token,
+                user: {
+                    id: result.insertId,
+                    name,
+                    email,
+                },
+                is_profile_completed: false,
             },
         });
 
@@ -258,14 +263,28 @@ const verifyLoginOTP = async (req, res) => {
         // Delete OTP after successful verification
         otpStore.delete(email);
 
+        
+
+        const [rows] = await pool.execute(
+            `
+    SELECT is_profile_completed
+    FROM users
+    WHERE id = ?
+    `,
+            [storedOTP.userId]
+        );
+
         return res.status(200).json({
             success: true,
             message: "Login Successful",
-            token,
-            user: {
-                id: storedOTP.userId,
-                name: storedOTP.name,
-                email: storedOTP.email,
+            data: {
+                token,
+                user: {
+                    id: storedOTP.userId,
+                    name: storedOTP.name,
+                    email: storedOTP.email,
+                },
+                    is_profile_completed: rows[0].is_profile_completed,
             },
         });
 
@@ -285,7 +304,7 @@ const resendOTP = async (req, res) => {
 
 
 
-        let { email = "" } = req.body;
+        let { email = "", type } = req.body;
 
         email = email.trim().toLowerCase();
 
