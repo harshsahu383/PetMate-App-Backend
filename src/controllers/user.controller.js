@@ -15,6 +15,27 @@ const completeProfile = async (req, res) => {
             profile_image
         } = req.body;
 
+        phone = phone?.trim();
+        gender = gender?.trim();
+        country = country?.trim();
+        state = state?.trim();
+        district = district?.trim();
+        address = address?.trim();
+
+        if (!["Male", "Female", "Other"].includes(gender)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid gender",
+            });
+        }
+
+        if (!/^[0-9]{10}$/.test(phone)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid phone number",
+            });
+        }
+
         // Validation
         if (
             !phone ||
@@ -28,6 +49,7 @@ const completeProfile = async (req, res) => {
                 message: "Please fill all required fields",
             });
         }
+    
 
         const [result] = await pool.execute(
             `
@@ -56,10 +78,32 @@ const completeProfile = async (req, res) => {
             ]
         );
 
+        const [rows] = await pool.execute(
+            `
+    SELECT
+        id,
+        name,
+        email,
+        phone,
+        gender,
+        country,
+        state,
+        district,
+        address,
+        profile_image,
+        is_profile_completed
+    FROM users
+    WHERE id = ?
+    `,
+            [userId]
+        );
+
         return res.status(200).json({
             success: true,
             message: "Profile completed successfully",
-            data: null,
+            data: {
+                user: rows[0],
+            },
         });
     } catch (error) {
 
