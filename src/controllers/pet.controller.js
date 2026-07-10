@@ -1,4 +1,5 @@
 const pool = require("../config/db");
+const generateUID = require("../utils/generateUid");
 
 const addPet = async (req, res) => {
 
@@ -80,7 +81,7 @@ const addPet = async (req, res) => {
                 pet_image ?? null
             ]
         );
-        const petUID = `PM-${String(result.insertId).padStart(6, "0")}`;
+        const petUID = generateUID("PM", result.insertId);
         await pool.execute(
             `
     UPDATE pets
