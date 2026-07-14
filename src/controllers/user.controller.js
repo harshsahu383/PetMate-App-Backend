@@ -11,7 +11,7 @@ const completeProfile = async (req, res) => {
             country,
             state,
             district,
-            address,
+            address,         
             profile_image
         } = req.body;
 

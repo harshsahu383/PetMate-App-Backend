@@ -1,9 +1,8 @@
 const pool = require("../config/db");
-const generateOTP = require("../utils/generateOTP");
+const generateOTP = require("../utils/generateOtp");
 const otpStore = require("../utils/otpStore");
 const sendOTPEmail = require("../services/email.service");
 const generateToken = require("../utils/generateToken");
-
 
 const sendEmailOTP = async (req, res) => {
     try {
@@ -371,5 +370,6 @@ module.exports = {
     sendEmailOTP,
     verifyEmailOTP,
     sendLoginOTP,
-    verifyLoginOTP,resendOTP
+    verifyLoginOTP,
+    resendOTP,
 };
