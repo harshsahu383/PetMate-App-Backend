@@ -19,6 +19,10 @@ const addPet = async (req, res) => {
             pet_image,
         } = req.body;
 
+        if (dob) {
+            dob = new Date(dob).toISOString().split("T")[0];
+        }
+
         pet_name = pet_name?.trim();
         pet_type = pet_type?.trim();
         breed = breed?.trim();
@@ -84,11 +88,14 @@ const addPet = async (req, res) => {
         const petUID = generateUID("PM", result.insertId);
         await pool.execute(
             `
-    UPDATE pets
-    SET pet_uid = ?
-    WHERE id = ?
-    `,
-            [petUID, result.insertId]
+UPDATE pets
+SET pet_uid = ?
+WHERE id = ?
+`,
+            [
+                petUID,
+                result.insertId
+            ]
         );
         return res.status(201).json({
             success: true,
@@ -154,8 +161,11 @@ const getMyPets = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            count: pets.length,
-            pets,
+            message: "Pets fetched successfully",
+            data: {
+                count: pets.length,
+                pets,
+            },
         });
 
     } catch (error) {
@@ -179,14 +189,9 @@ const getPetById = async (req, res) => {
     try {
 
         const userId = req.user.id;
-        const petId = Number(req.params.id);
+        const { pet_uid } = req.params;
 
-        if (!Number.isInteger(petId) || petId <= 0) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid pet id",
-            });
-        }
+       
 
         const [rows] = await pool.execute(
             `
@@ -204,10 +209,11 @@ const getPetById = async (req, res) => {
                 pet_image,
                 created_at
             FROM pets
-            WHERE id = ?
-            AND user_id = ?
+            WHERE pet_uid = ?
+AND user_id = ?
             `,
-            [petId, userId]
+            pet_uid,
+            userId
         );
 
         if (rows.length === 0) {
@@ -241,14 +247,9 @@ const updatePet = async (req, res) => {
     try {
 
         const userId = req.user.id;
-        const petId = Number(req.params.id);
+        const { pet_uid } = req.params;
 
-        if (!Number.isInteger(petId) || petId <= 0) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid Pet ID",
-            });
-        }
+     
 
         let {
             pet_name,
@@ -261,6 +262,10 @@ const updatePet = async (req, res) => {
             about_pet,
             pet_image,
         } = req.body;
+
+        if (dob) {
+            dob = new Date(dob).toISOString().split("T")[0];
+        }
 
         pet_name = pet_name?.trim();
         pet_type = pet_type?.trim();
@@ -308,8 +313,8 @@ const updatePet = async (req, res) => {
                 vaccinated = ?,
                 about_pet = ?,
                 pet_image = ?
-            WHERE id = ?
-            AND user_id = ?
+            WHERE pet_uid = ?
+AND user_id = ?
             `,
             [
                 pet_name,
@@ -321,9 +326,31 @@ const updatePet = async (req, res) => {
                 vaccinated ?? false,
                 about_pet ?? null,
                 pet_image ?? null,
-                petId,
+                pet_uid,
                 userId,
             ]
+        );
+        const [updatedPet] = await pool.execute(
+            `
+    SELECT
+        id,
+        pet_uid,
+        pet_name,
+        pet_type,
+        breed,
+        gender,
+        dob,
+        weight,
+        vaccinated,
+        about_pet,
+        pet_image,
+        created_at
+    FROM pets
+    WHERE pet_uid = ?
+AND user_id = ?
+    `,
+            pet_uid,
+            userId
         );
 
         if (result.affectedRows === 0) {
@@ -357,14 +384,9 @@ const deletePet = async (req, res) => {
     try {
 
         const userId = req.user.id;
-        const petId = Number(req.params.id);
+        const { pet_uid } = req.params;
 
-        if (!Number.isInteger(petId) || petId <= 0) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid Pet ID",
-            });
-        }
+      
 
         const [petRows] = await pool.execute(
             `
@@ -382,10 +404,11 @@ const deletePet = async (req, res) => {
         pet_image,
         created_at
     FROM pets
-    WHERE id = ?
-    AND user_id = ?
+    WHERE pet_uid = ?
+AND user_id = ?
     `,
-            [petId, userId]
+            pet_uid,
+            userId
         );
 
         if (petRows.length === 0) {
@@ -400,10 +423,11 @@ const deletePet = async (req, res) => {
         const [result] = await pool.execute(
             `
             DELETE FROM pets
-            WHERE id = ?
-            AND user_id = ?
+            WHERE pet_uid = ?
+AND user_id = ?
             `,
-            [petId, userId]
+            pet_uid,
+            userId
         );
 
         if (result.affectedRows === 0) {

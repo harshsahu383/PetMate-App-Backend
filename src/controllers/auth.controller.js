@@ -7,16 +7,48 @@ const generateToken = require("../utils/generateToken");
 const sendEmailOTP = async (req, res) => {
     try {
 
-        const name = req.body.name?.trim();
-        let { email } = req.body;
+        const name = String(req.body.name || "").trim();
+        let { email = "" } = req.body;
 
-        email = email.trim().toLowerCase();
+        email = String(email).trim().toLowerCase();
 
         // Validation
         if (!name || !email) {
             return res.status(400).json({
                 success: false,
                 message: "Name and Email are required",
+            });
+        }
+
+        // Name validation
+        if (name.length < 2) {
+            return res.status(400).json({
+                success: false,
+                message: "Name must be at least 2 characters",
+            });
+        }
+
+        if (!/^[A-Za-z ]+$/.test(name)) {
+            return res.status(400).json({
+                success: false,
+                message: "Name can contain only letters and spaces",
+            });
+        }
+
+        // Email validation
+        if (!email) {
+            return res.status(400).json({
+                success: false,
+                message: "Please enter your email",
+            });
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({
+                success: false,
+                message: "Please enter a valid email address",
             });
         }
 
@@ -150,14 +182,23 @@ const verifyEmailOTP = async (req, res) => {
 const sendLoginOTP = async (req, res) => {
     try {
 
-        let { email } = req.body;
+        let { email = "" } = req.body;
 
-        email = email.trim().toLowerCase();
+        email = String(email).trim().toLowerCase();
 
         if (!email) {
             return res.status(400).json({
                 success: false,
                 message: "Email is required",
+            });
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({
+                success: false,
+                message: "Please enter a valid email address",
             });
         }
 

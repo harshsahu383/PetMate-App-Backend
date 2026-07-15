@@ -15,10 +15,10 @@ router.post("/", authMiddleware, addPet);
 
 router.get("/", authMiddleware, getMyPets);
 
-router.get("/:id", authMiddleware, getPetById);
+router.get("/:pet_uid", authMiddleware, getPetById);
 
-router.put("/:id", authMiddleware, updatePet);
+router.put("/:pet_uid", authMiddleware, updatePet);
 
-router.delete("/:id", authMiddleware, deletePet);
+router.delete("/:pet_uid", authMiddleware, deletePet);
 
 module.exports = router;
