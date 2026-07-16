@@ -407,8 +407,7 @@ const deletePet = async (req, res) => {
     WHERE pet_uid = ?
 AND user_id = ?
     `,
-            pet_uid,
-            userId
+            [pet_uid, userId]
         );
 
         if (petRows.length === 0) {
@@ -426,8 +425,7 @@ AND user_id = ?
             WHERE pet_uid = ?
 AND user_id = ?
             `,
-            pet_uid,
-            userId
+            [pet_uid, userId]
         );
 
         if (result.affectedRows === 0) {
@@ -456,11 +454,41 @@ AND user_id = ?
 
     }
 };
+const uploadPetImage = async (req, res) => {
+    try {
+
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: "No image uploaded",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Pet image uploaded successfully",
+            data: {
+                pet_image: `/uploads/pets/${req.file.filename}`,
+            },
+        });
+
+    } catch (error) {
+
+        console.log(error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
+    }
+};
 
 module.exports = {
     addPet,
     getMyPets,
     getPetById,
     updatePet,
-    deletePet
+    deletePet,
+    uploadPetImage
 };
+   
