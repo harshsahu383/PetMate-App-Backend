@@ -25,7 +25,7 @@ router.delete("/:pet_uid", authMiddleware, deletePet);
 router.post(
     "/upload-pet-image",
     authMiddleware,
-    upload.single("image"),
+    upload.single("pet_image"),
     uploadPetImage
 );
 module.exports = router;

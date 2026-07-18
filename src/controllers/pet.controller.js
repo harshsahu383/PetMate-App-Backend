@@ -188,15 +188,12 @@ const getMyPets = async (req, res) => {
 const getPetById = async (req, res) => {
     try {
 
-        const userId = req.user.id;
-        const { pet_uid } = req.params;
-
-       
+            const userId = req.user.id;
+        const pet_uid = req.params.pet_uid;
 
         const [rows] = await pool.execute(
             `
             SELECT
-                id,
                 pet_uid,
                 pet_name,
                 pet_type,
@@ -206,14 +203,12 @@ const getPetById = async (req, res) => {
                 weight,
                 vaccinated,
                 about_pet,
-                pet_image,
-                created_at
+                pet_image
             FROM pets
             WHERE pet_uid = ?
-AND user_id = ?
+            AND user_id = ?
             `,
-            pet_uid,
-            userId
+            [pet_uid, userId]
         );
 
         if (rows.length === 0) {
@@ -233,7 +228,7 @@ AND user_id = ?
 
     } catch (error) {
 
-        console.error(error);
+        console.log(error);
 
         return res.status(500).json({
             success: false,
@@ -347,10 +342,9 @@ AND user_id = ?
         created_at
     FROM pets
     WHERE pet_uid = ?
-AND user_id = ?
+    AND user_id = ?
     `,
-            pet_uid,
-            userId
+            [pet_uid, userId]
         );
 
         if (result.affectedRows === 0) {
