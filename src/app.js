@@ -11,6 +11,10 @@ const petRoutes = require("./routes/pet.routes");
 const servicesRoutes = require("./routes/service.routes");
 const bookingRoutes = require("./routes/booking.routes");
 const bannerRoutes = require("./routes/banner.routes");
+const vaccineRoutes = require("./routes/vaccine.routes");
+const medicalRecordRoutes = require("./routes/medicalRecord.routes");
+const allergyRoutes = require("./routes/allergy.routes");
+const walkHistoryRoutes = require("./routes/walkHistory.routes");
 
 
 const app = express();
@@ -30,6 +34,10 @@ app.use("/api/pets", petRoutes);
 app.use("/api/services", servicesRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/banners", bannerRoutes);
+app.use("/api", vaccineRoutes);
+app.use("/api", medicalRecordRoutes);
+app.use("/api", allergyRoutes);
+app.use("/api", walkHistoryRoutes);
 
 // Test Route
 app.get("/", (req, res) => {
