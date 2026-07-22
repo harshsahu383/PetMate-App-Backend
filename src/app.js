@@ -16,6 +16,7 @@ const medicalRecordRoutes = require("./routes/medicalRecord.routes");
 const allergyRoutes = require("./routes/allergy.routes");
 const walkHistoryRoutes = require("./routes/walkHistory.routes");
 const hobbyRoutes = require("./routes/hobby.routes");
+const vendorRoutes = require("./routes/vendor.routes");
 
 
 const app = express();
@@ -40,6 +41,7 @@ app.use("/api", medicalRecordRoutes);
 app.use("/api", allergyRoutes);
 app.use("/api", walkHistoryRoutes);
 app.use("/api", hobbyRoutes);
+app.use("/api", vendorRoutes);
 
 // Test Route
 app.get("/", (req, res) => {

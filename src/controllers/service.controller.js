@@ -69,34 +69,32 @@ const getAllServices = async (req, res) => {
     }
 };
 
-const getServiceById = async (req, res) => {
+const getServiceByUid = async (req, res) => {
     try {
+        const { service_uid } = req.params;
 
-        const serviceId = Number(req.params.id);
-
-        if (!Number.isInteger(serviceId) || serviceId <= 0) {
+        if (!service_uid) {
             return res.status(400).json({
                 success: false,
-                message: "Invalid Service ID",
+                message: "Service UID is required",
             });
         }
 
         const [rows] = await pool.execute(
             `
-            SELECT
-                id,
-                service_uid,
-                category,
-                title,
-                description,
-                price,
-                duration,
-                image
-            FROM services
-            WHERE id = ?
-            AND is_active = TRUE
-            `,
-            [serviceId]
+      SELECT
+          service_uid,
+          category,
+          title,
+          description,
+          price,
+          duration,
+          image
+      FROM services
+      WHERE service_uid = ?
+      AND is_active = TRUE
+      `,
+            [service_uid]
         );
 
         if (rows.length === 0) {
@@ -113,19 +111,16 @@ const getServiceById = async (req, res) => {
                 service: rows[0],
             },
         });
-
     } catch (error) {
-
         console.error(error);
 
         return res.status(500).json({
             success: false,
             message: "Internal Server Error",
         });
-
     }
 };
 module.exports = {
     getAllServices,
-    getServiceById,
+    getServiceByUid,
 };
