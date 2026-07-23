@@ -13,25 +13,24 @@ const getVendorsByService = async (req, res) => {
 
         const [vendors] = await pool.execute(
             `
-      SELECT
-          v.vendor_uid,
-          v.vendor_name,
-          v.email,
-          v.phone,
-          v.address,
-          v.city,
-          v.state,
-          v.pincode,
-          v.profile_image,
-          v.rating,
-          v.total_reviews
-      FROM vendor_services vs
-      INNER JOIN vendors v
-          ON vs.vendor_uid = v.vendor_uid
-      WHERE
-          vs.service_uid = ?
-          AND v.is_active = TRUE
-      ORDER BY v.rating DESC
+     SELECT
+    v.vendor_uid,
+    v.vendor_name,
+    v.profile_image,
+    v.rating,
+    v.address,
+    v.city,
+    v.state,
+    vs.price,
+    vs.duration
+FROM vendor_services vs
+INNER JOIN vendors v
+    ON vs.vendor_uid = v.vendor_uid
+WHERE
+    vs.service_uid = ?
+    AND vs.is_available = TRUE
+    AND v.is_active = TRUE
+ORDER BY v.rating DESC;
       `,
             [service_uid]
         );

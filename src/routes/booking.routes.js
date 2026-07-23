@@ -11,6 +11,15 @@ const {
     getBookingById,
     cancelBooking,
 } = require("../controllers/booking.controller");
+const {
+    getBookingSummary,
+} = require("../controllers/bookingSummary.controller");
+
+router.get(
+    "/summary",
+    authMiddleware,
+    getBookingSummary
+);
 
 router.post("/", authMiddleware, createBooking);
 
